@@ -23,8 +23,8 @@
 	};
 
 	cpus {
-		#address-cells = <0x1>
-;		#size-cells = <0x0>;
+		#address-cells = <0x1>;
+		#size-cells = <0x0>;
 
 		cpu@0 {
 			compatible = "arm,cortex-a9";
@@ -122,9 +122,11 @@
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
 
-			ssm2603: ssm2603@1a {
-				compatible = "adi,ssm2603";
+			ssm2603@1a {
+				compatible = "adi,ssm2602";
 				reg = <0x1a>;
+				linux,phandle = <0x6>;
+				phandle = <0x6>;
 			};
 		};
 
@@ -452,20 +454,42 @@
 			reg = <0xe0003000 0x1000>;
 		};
 
-		axi_i2s: axi-i2s@43c20000 {
+		axi-i2s@43c20000 {
 			compatible = "adi,axi-i2s-1.00.a";
 			reg = <0x43c20000 0x1000>;
 			clocks = <0x1 0xf 0x1 0x11>;
-			clock-names = "axi", "i2s";
+			clock-names = "axi", "ref";
 			clock-frequency = <0xbb8000>;
-			dmas = <0x5 0x1 0x5 0x2>;
+			dmas = <0x5 0x0 0x5 0x1>;
 			dma-names = "tx", "rx";
+			linux,phandle = <0x7>;
+			phandle = <0x7>;
 		};
 
-		ssm2603_snd: ssm2603_snd {
-			compatible = "ssm2603-snd";
-			audio-codec = <&ssm2603>;
-			cpu-dai = <&axi_i2s>;
+		zybo_snd {
+			compatible = "zybo-snd";
+			audio-codec = <0x6>;
+			cpu-dai = <0x7>;
+		};
+
+		axivdma@43000000 {
+			#address-cells = <0x1>;
+			#size-cells = <0x1>;
+			#dma-cells = <0x1>;
+			compatible = "xlnx,axi-vdma";
+			reg = <0x43000000 0x1000>;
+			xlnx,include-sg = <0x0>;
+			xlnx,num-fstores = <0x3>;
+			linux,phandle = <0x8>;
+			phandle = <0x8>;
+
+			dma-channel@43000000 {
+				compatible = "xlnx,axi-vdma-mm2s-channel";
+				interrupts = <0x0 0x3b 0x4>;
+				xlnx,datawidth = <0x40>;
+				xlnx,genlock-mode = <0x0>;
+				xlnx,include-dre = <0x0>;
+			};
 		};
 	};
 };
